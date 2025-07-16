@@ -39,6 +39,7 @@ public class UserSeeder implements ApplicationRunner {
           .username("user" + i)
           .email("user" + i + "@example.com")
           .password("Test" + i + "@123")
+          .bio("Hey there! I'm user # " + i + ".")
           .role(Role.USER)
           .build();
 

@@ -34,6 +34,9 @@ public class UserDTO {
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", message = "Invalid email address")
     private String email;
 
+    @Size(max = 255, message = "bio must not exceed 255 characters")
+    private String bio;
+
     private Role role;
 
     /** Convert Entity → DTO */
@@ -43,6 +46,7 @@ public class UserDTO {
                 .username(user.getUsername())
                 .password(null) // do NOT expose password
                 .email(user.getEmail())
+                .bio(user.getBio())
                 .role(user.getRole())
                 .build();
     }
@@ -54,6 +58,7 @@ public class UserDTO {
                 .username(username)
                 .password(encodedPassword)
                 .email(email)
+                .bio(bio)
                 .role(role != null ? role : Role.USER)
                 .build();
     }
