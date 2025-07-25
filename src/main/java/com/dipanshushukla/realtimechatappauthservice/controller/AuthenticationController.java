@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dipanshushukla.realtimechatappauthservice.dto.JwtResponseDTO;
+import com.dipanshushukla.realtimechatappauthservice.dto.RefreshTokenRequestDTO;
 import com.dipanshushukla.realtimechatappauthservice.dto.UserDTO;
 import com.dipanshushukla.realtimechatappauthservice.dto.UserLoginCredentialsDTO;
 import com.dipanshushukla.realtimechatappauthservice.dto.UsernameExistsResponseDTO;
@@ -38,8 +39,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<JwtResponseDTO> refreshToken(@RequestBody String refreshToken) {
-        return ResponseEntity.ok(authService.refreshToken(refreshToken));
+    public ResponseEntity<JwtResponseDTO> refreshToken(@RequestBody RefreshTokenRequestDTO dto) {
+        return ResponseEntity.ok(authService.refreshToken(dto.getRefreshToken()));
     }
 
     @GetMapping("/.well-known/jwks.json")
