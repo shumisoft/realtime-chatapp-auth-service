@@ -1,62 +1,13 @@
 package com.dipanshushukla.realtimechatappauthservice.service;
 
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+public interface UsernameBloomFilterService {
 
-import java.util.List;
+  void init();
 
-import org.redisson.api.RBloomFilter;
-import org.redisson.api.RedissonClient;
-import org.springframework.stereotype.Service;
+  void resetAndRehydrate();
 
-import com.dipanshushukla.realtimechatappauthservice.repository.UserCredentialRepository;
+  boolean exists(String username);
 
-@Service
-@RequiredArgsConstructor
-@Slf4j
-public class UsernameBloomFilterService {
+  boolean add(String username);
 
-    private final UserCredentialRepository repository;
-
-    private final RedissonClient redissonClient;
-    private RBloomFilter<String> usernameBloomFilter;
-
-    private static final String FILTER_NAME = "realtime-chatapp-username-bloom-filter";
-    private static final long EXPECTED_INSERTIONS = 1_000_000L; // Expected user base
-    private static final double FALSE_PROBABILITY = 0.01; // 1% false positive rate
-
-    @PostConstruct
-    public void init() {
-        this.usernameBloomFilter = redissonClient.getBloomFilter(FILTER_NAME);
-
-        boolean isNew = usernameBloomFilter.tryInit(EXPECTED_INSERTIONS, FALSE_PROBABILITY);
-
-        if (isNew) {
-            log.info("Bloom Filter created.");
-            hydrate();
-        }
-    }
-
-    public void resetAndRehydrate() {
-        log.info("Resetting Bloom Filter: Deleting key and re-initializing.");
-        usernameBloomFilter.delete();
-        init();
-        log.info("Bloom Filter has been reset and re-hydrated.");
-    }
-
-    private void hydrate() {
-        log.info("Hydrating usernames from the DB.");
-        List<String> usernames = repository.findAllUsernames();
-        usernames.stream().forEach(this::add);
-        log.info("Hydration completed. Count: {}", usernames.size());
-    }
-
-    public boolean exists(String username) {
-        return usernameBloomFilter.contains(username);
-    }
-
-    public boolean add(String username) {
-        return usernameBloomFilter.add(username);
-    }
 }

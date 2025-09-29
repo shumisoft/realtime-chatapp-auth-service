@@ -1,4 +1,4 @@
-package com.dipanshushukla.realtimechatappauthservice.exception;
+package com.dipanshushukla.realtimechatappauthservice.exception.handler;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -14,6 +14,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import com.dipanshushukla.realtimechatappauthservice.exception.UsernameAlreadyExistsException;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;

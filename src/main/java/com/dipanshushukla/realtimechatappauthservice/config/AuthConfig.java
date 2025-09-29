@@ -15,14 +15,14 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.dipanshushukla.realtimechatappauthservice.filter.JwtAuthenticationFilter;
-import com.dipanshushukla.realtimechatappauthservice.service.UserDetailsServiceImp;
+import com.dipanshushukla.realtimechatappauthservice.service.impl.UserDetailsServiceImpl;
 
 @Configuration
 @EnableWebSecurity
 public class AuthConfig {
 
     @Autowired
-    private UserDetailsServiceImp userDetailsServiceImp;
+    private UserDetailsServiceImpl userDetailsServiceImp;
 
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;

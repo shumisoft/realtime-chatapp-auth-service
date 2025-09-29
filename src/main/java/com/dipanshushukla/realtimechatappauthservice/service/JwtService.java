@@ -1,132 +1,50 @@
 package com.dipanshushukla.realtimechatappauthservice.service;
 
-import java.io.ByteArrayInputStream;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.interfaces.RSAPublicKey;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.converter.RsaKeyConverters;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import jakarta.annotation.PostConstruct;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 
-@Service
-@Slf4j
-@Data
-public class JwtService {
+public interface JwtService {
 
-    @Value("${jwt.public-key}")
-    private String publicKeyPem;
+  String getPublicKeyPem();
 
-    @Value("${jwt.private-key}")
-    private String privateKeyPem;
+  String getPrivateKeyPem();
 
-    private PrivateKey privateKey;
-    private PublicKey publicKey;
+  PrivateKey getPrivateKey();
 
-    @PostConstruct
-    public void init() {
-        try {
-            log.info("Loading RSA keys from config...");
+  PublicKey getPublicKey();
 
-            this.privateKey = RsaKeyConverters.pkcs8()
-                    .convert(new ByteArrayInputStream(privateKeyPem.getBytes()));
+  void setPublicKeyPem(String publicKeyPem);
 
-            this.publicKey = RsaKeyConverters.x509()
-                    .convert(new ByteArrayInputStream(publicKeyPem.getBytes()));
+  void setPrivateKeyPem(String privateKeyPem);
 
-            log.info("Keys loaded successfully");
-        } catch (Exception e) {
-            log.error("Failed to load RSA keys", e);
-            throw new RuntimeException("Failed to initialize JwtService", e);
-        }
-    }
+  void setPrivateKey(PrivateKey privateKey);
 
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
+  void setPublicKey(PublicKey publicKey);
 
-    public boolean isValid(String token, UserDetails user) {
-        String username = extractUsername(token);
-        return username.equals(user.getUsername()) && !isTokenExpired(token);
-    }
+  boolean equals(java.lang.Object o);
 
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
+  int hashCode();
 
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
+  java.lang.String toString();
 
-    public <T> T extractClaim(String token, Function<Claims, T> resolver) {
-        Claims claims = extractAllClaims(token);
-        return resolver.apply(claims);
-    }
+  void init();
 
-    private Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(publicKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
+  String extractUsername(String token);
 
-    public String generateAccessToken(UUID userId, String username) {
-        return Jwts
-                .builder()
-                .setSubject(username)
-                .claim("userId", userId.toString())
-                .claim("username", username)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 6L * 60 * 60 * 1000))
-                .signWith(privateKey, SignatureAlgorithm.RS256)
-                .compact();
-    }
+  boolean isValid(String token, UserDetails user);
 
-    public String generateRefreshToken(UUID userId, String username) {
-        return Jwts
-                .builder()
-                .setSubject(username)
-                .claim("userId", userId.toString())
-                .claim("username", username)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 30L * 24 * 60 * 60 * 1000))
-                .signWith(privateKey, SignatureAlgorithm.RS256)
-                .compact();
-    }
+  <T> T extractClaim(String token, Function<Claims, T> resolver);
 
-    public Object getJwks() {
-        RSAPublicKey rsaPublicKey = (RSAPublicKey) this.getPublicKey();
+  String generateAccessToken(UUID userId, String username);
 
-        Map<String, Object> jwk = new HashMap<>();
-        jwk.put("kty", "RSA");
-        jwk.put("kid", "auth-service-key"); // stable key ID
-        jwk.put("n", base64Url(rsaPublicKey.getModulus().toByteArray()));
-        jwk.put("e", base64Url(rsaPublicKey.getPublicExponent().toByteArray()));
+  String generateRefreshToken(UUID userId, String username);
 
-        return Map.of("keys", List.of(jwk));
+  Object getJwks();
 
-    }
-
-    private String base64Url(byte[] bytes) {
-        return Base64.getUrlEncoder()
-                .withoutPadding()
-                .encodeToString(bytes);
-    }
 }
