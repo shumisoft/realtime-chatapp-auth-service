@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.dipanshushukla.realtimechatappauthservice.dto.UserDTO;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 @RequiredArgsConstructor
+@Profile("!test")
 public class UserSeeder implements ApplicationRunner {
 
   private final UserCredentialRepository repository;
