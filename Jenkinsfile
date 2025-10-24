@@ -31,7 +31,7 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQubeOC-DS') {
                     sh '''
-                        mvn clean verify -DskipTests sonar:sonar \
+                        mvn clean verify sonar:sonar \
                           -Dsonar.projectKey=Realtime_Chatapp-Auth_Service \
                           -Dsonar.projectName=Realtime-Chatapp-Auth-Service \
                           -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
@@ -48,7 +48,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'mvn package -DskipTests'
+                sh 'mvn package'
             }
         }
         stage('Build & Push Multi-Arch Docker Image') {
