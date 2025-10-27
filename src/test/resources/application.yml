@@ -1,0 +1,67 @@
+spring:
+  config:
+    import: ""          # blanks out the 'configserver:' import
+  cloud:
+    config:
+      enabled: false
+      # import-check:
+        # enabled: false
+  datasource:
+    url: ""             # will be overridden by @DynamicPropertySource
+    username: ""
+    password: ""
+    hikari:
+      max-lifetime: 10000
+      connection-timeout: 5000
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+eureka:
+  client:
+    enabled: false
+
+jwt:
+  private-key: | # The | YAML block scalar preserves the newlines, which is required for PEM parsing.
+    -----BEGIN PRIVATE KEY-----
+    MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCnHdNU9/W561M3
+    kCwbFV8b8vocgqULDW0wMsx8MglFl+jtKtPu8r2lRiIHB+mLGxo6pUNnvAe/eUkU
+    UyyJrt7qzaCPv2XZ1PzEb/A3pODe+x9vQMJzVjb47qi7x2As6kDe/YTb3XALY7mq
+    dQFIZpypp/7mnc1/TNqtuqevaH/rV49Gj+EvSuE0wi885lS4XNU4DvEEjExZT1UB
+    k51lW2pM96SWMJgPrp/ZJA4lzrID4W+TGkPwX2lKxS1yIzqUBrJNBQRHcmU7E0bC
+    nxJj/ECiXbDoLfYHNp9YDdxS2bWI83m8qcfnemfehw+X9mciKCqFLe4xhWLNdiar
+    X6WStg+1AgMBAAECggEACKFBVOWfz+O3dBVtjFHUi9nxUTWXQPSG4J1O8qmW0abg
+    RWxtGK16XlA6g53EprAAm79bCr6qsRhEo4MOuBF1Zi9g4kDNCVcMB+I2nSOrj82X
+    Yvm3e5ib1XZln5on0kn1OE65OgK7vYAp31k+zAwDJ75gKxftEReD7MLIfrC+d7BZ
+    d7fva7PeUUDrQVVrHKeoHAslrO+qNsHfeP+Advo6VTyYZMyY+kToWsyOxAQ3Wetw
+    K3q8IdZbupNSvMYHSmiAIn6vAelm/XYrU90zFmzfb9Cy69Oq0TzGOQTMBq6YXFtb
+    Apjk3dbtVbRab0BdKDDcXuwK6Y94zcWY+ireyYVQBQKBgQDY87FX2HDGww4xLUR8
+    LPDlVEvVbwmx7dYI1ZcATrGA/Y905C1C2H+9p4naOm/9Io05HR6Cb6Xa1QqJ5ql4
+    F5b801XRKCBtkdC+JUa46liVNv7wIbNnYaZ3/wQtl+W88BtAiFevmzQZoxvqah7r
+    CRMOnICKE0G/dCd9m5f6ZWKJbwKBgQDFMei2ZjX1Cs+qFB6sScGOosp3YfjFWljH
+    bb9VUVxHTINE5VmOo2+836mqterLT4F9nyPmrP02vp6Ts/ZQKC+skzcEE/fPDSWH
+    LMYvsscbJFtLHHcUUIVtlccDQzbPjUryFCEeeGpF6gAMxsGK7rItJYnTi3AdFwOQ
+    8wwaflT/GwKBgQCgMhFZVDCyE4V/OnW/W0/lhoEYcI0wHPZWP6DoUTMwlApBvdrN
+    6R8p43Qe99eJiuHMsnu8xMQq+fR2LyQj0QdkWIidkIuhXHJOdSfrkt8mDx3gIoJe
+    a/SH1n43TFoPURxOYl6dBHVMGOycAxAhbOnteBJR4jZCMHqYfTOTaRmBcQKBgCH9
+    3XB7o/dueqeFulfWiu/sbdwwXjKexUjzSRUK5k5ACSy6IDrvP1aec1/C5gtP1DF0
+    WjrsPOXP7APn9KCSnM0xvz0LuB7P1FU9yZf1SE8McFQ9PuWYj7d5JwoP7wXOBEpA
+    YAkhlqggkwugw0IQrVQM8Xouwg+xpOK6kq6KclpbAoGAFtDul5o81l/Tdgi9m4k6
+    Gj7fAsSrDVidP4QASuaaqq2/3bxvNJQ0jv97YkcEA7gsg/X/Nj08XyJe6pRuJWP1
+    YEsJhucYuJsta+S0TBF2Y/RXL9zSO1I2nmcG+9NL7MUBIrlyH9EOvUlTne53bYec
+    GZLT70KO1TPZZc+Cls1rJfI=
+    -----END PRIVATE KEY-----
+
+  public-key: |
+    -----BEGIN PUBLIC KEY-----
+    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApx3TVPf1uetTN5AsGxVf
+    G/L6HIKlCw1tMDLMfDIJRZfo7SrT7vK9pUYiBwfpixsaOqVDZ7wHv3lJFFMsia7e
+    6s2gj79l2dT8xG/wN6Tg3vsfb0DCc1Y2+O6ou8dgLOpA3v2E291wC2O5qnUBSGac
+    qaf+5p3Nf0zarbqnr2h/61ePRo/hL0rhNMIvPOZUuFzVOA7xBIxMWU9VAZOdZVtq
+    TPekljCYD66f2SQOJc6yA+FvkxpD8F9pSsUtciM6lAayTQUER3JlOxNGwp8SY/xA
+    ol2w6C32BzafWA3cUtm1iPN5vKnH53pn3ocPl/ZnIigqhS3uMYVizXYmq1+lkrYP
+    tQIDAQAB
+    -----END PUBLIC KEY-----
+
+# add any other properties your app requires at startup
