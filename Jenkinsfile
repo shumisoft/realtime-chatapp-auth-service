@@ -9,7 +9,7 @@ pipeline {
 
     environment {
         SCANNER_HOME= tool 'sonar-scanner'
-        TESTCONTAINERS_RYUK_DISABLED = 'true'
+        TESTCONTAINERS_HOST_OVERRIDE = '172.17.0.1'
     }
 
     stages {
