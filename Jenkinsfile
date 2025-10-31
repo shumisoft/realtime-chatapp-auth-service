@@ -9,7 +9,7 @@ pipeline {
 
     environment {
         SCANNER_HOME= tool 'sonar-scanner'
-        DOCKER_HOST = 'unix:///var/run/docker.sock'
+        TESTCONTAINERS_HOST_OVERRIDE = 'host-gateway'
     }
 
     stages {
