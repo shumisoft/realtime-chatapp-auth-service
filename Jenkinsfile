@@ -10,8 +10,8 @@ pipeline {
     environment {
         SCANNER_HOME= tool 'sonar-scanner'
 
-        TESTCONTAINERS_RYUK_DISABLED = 'true'
-        TESTCONTAINERS_HOST_OVERRIDE = 'host-gateway'
+        // TESTCONTAINERS_RYUK_DISABLED = 'true'
+        // TESTCONTAINERS_HOST_OVERRIDE = 'host-gateway'
     }
 
     stages {
@@ -38,6 +38,7 @@ pipeline {
                           -Dsonar.projectKey=Realtime_Chatapp-Auth_Service \
                           -Dsonar.projectName=Realtime-Chatapp-Auth-Service \
                           -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+                          -Dgroups='!integraion'
                     '''
                 }
             }

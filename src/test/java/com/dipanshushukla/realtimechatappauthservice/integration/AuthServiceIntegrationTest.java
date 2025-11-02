@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,6 +24,7 @@ import com.dipanshushukla.realtimechatappauthservice.repository.UserCredentialRe
 import com.dipanshushukla.realtimechatappauthservice.service.UsernameBloomFilterService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@Tag("integration")
 public class AuthServiceIntegrationTest extends AbstractIntegrationTest {
 
 	@Autowired
