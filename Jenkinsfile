@@ -38,7 +38,7 @@ pipeline {
                           -Dsonar.projectKey=Realtime_Chatapp-Auth_Service \
                           -Dsonar.projectName=Realtime-Chatapp-Auth-Service \
                           -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
-                          -Dgroups='!integraion'
+                          -Dgroups='!integration'
                     '''
                 }
             }
