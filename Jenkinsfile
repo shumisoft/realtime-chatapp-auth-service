@@ -37,7 +37,7 @@ pipeline {
                         mvn clean verify sonar:sonar \
                           -Dsonar.projectKey=Realtime_Chatapp-Auth_Service \
                           -Dsonar.projectName=Realtime-Chatapp-Auth-Service \
-                          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+                          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
                           -Dgroups='!integration'
                     '''
                 }
