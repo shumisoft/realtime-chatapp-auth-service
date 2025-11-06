@@ -10,7 +10,7 @@ pipeline {
     environment {
         SCANNER_HOME= tool 'sonar-scanner'
 
-        TESTCONTAINERS_RYUK_DISABLED = 'true'
+        // TESTCONTAINERS_RYUK_DISABLED = 'true'
         // TESTCONTAINERS_HOST_OVERRIDE = 'host-gateway'
     }
 
