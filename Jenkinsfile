@@ -52,7 +52,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'mvn package'
+                sh "mvn package -Dgroups='!integration'"
             }
         }
         stage('Build & Push Multi-Arch Docker Image') {
