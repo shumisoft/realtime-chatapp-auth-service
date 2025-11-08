@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import com.dipanshushukla.realtimechatappauthservice.entity.User;
 import com.dipanshushukla.realtimechatappauthservice.service.impl.JwtServiceImpl;
 
-public class JwtServiceImplTest {
+class JwtServiceImplTest {
 
   private JwtService jwtService;
   private UUID testUserId;
@@ -139,7 +139,7 @@ public class JwtServiceImplTest {
     failingService.setPrivateKeyPem("this_is_not_a_valid_private_key");
     failingService.setPublicKeyPem("this_is_not_a_valid_public_key");
 
-    RuntimeException exception = assertThrows(RuntimeException.class, () -> failingService.init());
+    RuntimeException exception = assertThrows(RuntimeException.class, failingService::init);
 
     assertEquals("Failed to initialize JwtService", exception.getMessage());
 

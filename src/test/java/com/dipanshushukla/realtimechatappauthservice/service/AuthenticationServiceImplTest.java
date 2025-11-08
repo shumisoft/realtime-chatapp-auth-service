@@ -32,7 +32,7 @@ import com.dipanshushukla.realtimechatappauthservice.service.impl.Authentication
 import com.dipanshushukla.realtimechatappauthservice.service.impl.UserDetailsServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
-public class AuthenticationServiceImplTest {
+class AuthenticationServiceImplTest {
 
   // Mock instances of the dependencies
   @Mock

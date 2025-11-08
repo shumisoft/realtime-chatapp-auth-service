@@ -33,7 +33,7 @@ import com.dipanshushukla.realtimechatappauthservice.service.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(MockitoExtension.class)
-public class AuthenticationControllerTest {
+class AuthenticationControllerTest {
 
 	private MockMvc mockMvc;
 	private ObjectMapper objectMapper = new ObjectMapper();
