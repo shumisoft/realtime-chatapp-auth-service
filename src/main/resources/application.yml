@@ -1,0 +1,17 @@
+spring:
+    application:
+        name: realtime-chatapp-auth-service
+    config:
+        import: "configserver:"
+
+    cloud:
+        config:
+            discovery:
+                enabled: true
+                service-id: realtime-chatapp-config-service
+            fail-fast: true
+
+eureka:
+    client:
+        service-url:
+            defaultZone: http://localhost:8761/eureka/

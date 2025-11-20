@@ -26,30 +26,31 @@ public class AuthConfig {
 
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
-    
+
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(
-            AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(
-                req -> req.requestMatchers("/login/**", "/register/**", "/refresh-token/**")
-            .permitAll()
-            .requestMatchers("/admin_only/**").hasAuthority("ADMIN")
-            .anyRequest()
-            .authenticated()
-        ).userDetailsService(userDetailsServiceImp)
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-        .build();
+                AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(
+                        req -> req.requestMatchers("/login/**", "/register/**", "/refresh-token/**")
+                                .permitAll()
+                                .requestMatchers("/.well-known/jwks.json").permitAll()
+                                .requestMatchers("/admin_only/**").hasAuthority("ADMIN")
+                                .anyRequest()
+                                .authenticated())
+                .userDetailsService(userDetailsServiceImp)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception{
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
 }
