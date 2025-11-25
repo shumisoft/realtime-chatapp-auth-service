@@ -1,44 +1,48 @@
 package com.dipanshushukla.realtimechatappauthservice.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dipanshushukla.realtimechatappauthservice.dto.JwtResponseDTO;
 import com.dipanshushukla.realtimechatappauthservice.dto.UserDTO;
 import com.dipanshushukla.realtimechatappauthservice.dto.UserLoginCredentialsDTO;
 import com.dipanshushukla.realtimechatappauthservice.service.AuthenticationService;
+import com.dipanshushukla.realtimechatappauthservice.service.JwtService;
 
 import jakarta.validation.Valid;
-
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
+import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequiredArgsConstructor
 public class AuthenticationController {
 
-    @Autowired
-    private AuthenticationService authService;
+    private final AuthenticationService authService;
+    private final JwtService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<JwtResponseDTO> register(@Valid @RequestBody UserDTO request) {
-        
-        return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(authService.register(request));
     }
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponseDTO> login(@Valid @RequestBody UserLoginCredentialsDTO request) {
-        
         return ResponseEntity.ok(authService.authenticate(request));
     }
 
     @PostMapping("/refresh-token")
     public ResponseEntity<JwtResponseDTO> refreshToken(@RequestBody String refreshToken) {
-        JwtResponseDTO jwtResponseDTO = authService.refreshToken(refreshToken);
-        return ResponseEntity.ok(jwtResponseDTO);
+        return ResponseEntity.ok(authService.refreshToken(refreshToken));
     }
-    
+
+    @GetMapping("/.well-known/jwks.json")
+    public ResponseEntity<Object> getJwks() {
+        return ResponseEntity.ok(jwtService.getJwks());
+
+    }
 
 }

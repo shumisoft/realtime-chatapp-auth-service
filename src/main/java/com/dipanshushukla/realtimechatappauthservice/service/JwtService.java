@@ -1,17 +1,20 @@
 package com.dipanshushukla.realtimechatappauthservice.service;
 
-import java.security.KeyFactory;
+import java.io.ByteArrayInputStream;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
+import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.converter.RsaKeyConverters;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +22,13 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.annotation.PostConstruct;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
+@Data
 public class JwtService {
-
-    private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
 
     @Value("${jwt.public-key}")
     private String publicKeyPem;
@@ -37,14 +42,17 @@ public class JwtService {
     @PostConstruct
     public void init() {
         try {
-            logger.info("Initializing JwtService...");
-            logger.debug("Raw Private Key: {}", privateKeyPem);
-            logger.debug("Raw Public Key: {}", publicKeyPem);
-            privateKey = loadPrivateKey(privateKeyPem);
-            publicKey = loadPublicKey(publicKeyPem);
-            logger.info("Keys successfully loaded.");
+            log.info("Loading RSA keys from config...");
+
+            this.privateKey = RsaKeyConverters.pkcs8()
+                    .convert(new ByteArrayInputStream(privateKeyPem.getBytes()));
+
+            this.publicKey = RsaKeyConverters.x509()
+                    .convert(new ByteArrayInputStream(publicKeyPem.getBytes()));
+
+            log.info("Keys loaded successfully");
         } catch (Exception e) {
-            logger.error("Failed to load keys", e);
+            log.error("Failed to load RSA keys", e);
             throw new RuntimeException("Failed to initialize JwtService", e);
         }
     }
@@ -100,27 +108,22 @@ public class JwtService {
                 .compact();
     }
 
-    private PrivateKey loadPrivateKey(String pem) throws Exception {
-        logger.debug("Loading private key");
-        String privateKeyPem = pem.replace("-----BEGIN PRIVATE KEY-----", "")
-                                  .replace("-----END PRIVATE KEY-----", "")
-                                  .replaceAll("\\s", "");
-        logger.debug("Processed Private Key: {}", privateKeyPem);
-        byte[] keyBytes = Base64.getDecoder().decode(privateKeyPem);
-        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        return kf.generatePrivate(spec);
+    public Object getJwks() {
+        RSAPublicKey rsaPublicKey = (RSAPublicKey) this.getPublicKey();
+
+        Map<String, Object> jwk = new HashMap<>();
+        jwk.put("kty", "RSA");
+        jwk.put("kid", "auth-service-key"); // stable key ID
+        jwk.put("n", base64Url(rsaPublicKey.getModulus().toByteArray()));
+        jwk.put("e", base64Url(rsaPublicKey.getPublicExponent().toByteArray()));
+
+        return Map.of("keys", List.of(jwk));
+
     }
 
-    private PublicKey loadPublicKey(String pem) throws Exception {
-        logger.debug("Loading public key");
-        String publicKeyPem = pem.replace("-----BEGIN PUBLIC KEY-----", "")
-                                 .replace("-----END PUBLIC KEY-----", "")
-                                 .replaceAll("\\s", "");
-        logger.debug("Processed Public Key: {}", publicKeyPem);
-        byte[] keyBytes = Base64.getDecoder().decode(publicKeyPem);
-        X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        return kf.generatePublic(spec);
+    private String base64Url(byte[] bytes) {
+        return Base64.getUrlEncoder()
+                .withoutPadding()
+                .encodeToString(bytes);
     }
 }
