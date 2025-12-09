@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -45,8 +43,8 @@ public class AuthenticationService {
 
         user = repository.save(user);
 
-        String accessToken = jwtService.generateAccessToken(user.getUsername());
-        String refreshToken = jwtService.generateRefreshToken(user.getUsername());
+        String accessToken = jwtService.generateAccessToken(user.getUserId(), user.getUsername());
+        String refreshToken = jwtService.generateRefreshToken(user.getUserId(), user.getUsername());
 
         return new JwtResponseDTO(accessToken, refreshToken);
     }
@@ -60,9 +58,11 @@ public class AuthenticationService {
                         request.getUsername(),
                         request.getPassword()));
 
-        String accessToken = jwtService.generateAccessToken(request.getUsername());
-        String refreshToken = jwtService.generateRefreshToken(request.getUsername());
+        User user = repository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new BadCredentialsException("Invalid credentials"));
 
+        String accessToken = jwtService.generateAccessToken(user.getUserId(), user.getUsername());
+        String refreshToken = jwtService.generateRefreshToken(user.getUserId(), user.getUsername());
         return new JwtResponseDTO(accessToken, refreshToken);
     }
 
@@ -72,17 +72,18 @@ public class AuthenticationService {
         if (username == null)
             throw new IllegalArgumentException("Invalid refresh token");
 
-        UserDetails user = userDetailsService.loadUserByUsername(username);
+        User user = repository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid refresh token"));
 
-        if (!jwtService.isValid(refreshToken, user))
+        if (!jwtService.isValid(refreshToken, userDetailsService.loadUserByUsername(username)))
             throw new IllegalArgumentException("Invalid refresh token");
 
-        return new JwtResponseDTO(
-                jwtService.generateAccessToken(username),
-                refreshToken);
+        String newAccessToken = jwtService.generateAccessToken(user.getUserId(), user.getUsername());
+
+        return new JwtResponseDTO(newAccessToken, refreshToken);
     }
 
-    public Boolean userExistsByUsername(String username) {
+    public boolean userExistsByUsername(String username) {
         return repository.existsByUsername(username);
     }
 }

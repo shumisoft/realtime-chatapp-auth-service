@@ -9,11 +9,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.converter.RsaKeyConverters;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -88,20 +87,24 @@ public class JwtService {
                 .getBody();
     }
 
-    public String generateAccessToken(String username) {
+    public String generateAccessToken(UUID userId, String username) {
         return Jwts
                 .builder()
                 .setSubject(username)
+                .claim("userId", userId.toString())
+                .claim("username", username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 6L * 60 * 60 * 1000))
                 .signWith(privateKey, SignatureAlgorithm.RS256)
                 .compact();
     }
 
-    public String generateRefreshToken(String username) {
+    public String generateRefreshToken(UUID userId, String username) {
         return Jwts
                 .builder()
                 .setSubject(username)
+                .claim("userId", userId.toString())
+                .claim("username", username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 30L * 24 * 60 * 60 * 1000))
                 .signWith(privateKey, SignatureAlgorithm.RS256)
