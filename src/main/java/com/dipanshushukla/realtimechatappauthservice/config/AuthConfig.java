@@ -37,7 +37,7 @@ public class AuthConfig {
         return http.csrf(
                 AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        req -> req.requestMatchers("/login/**", "/register/**", "/refresh-token/**")
+                        req -> req.requestMatchers("/login/**", "/register/**", "/refresh-token/**", "/exists/**")
                                 .permitAll()
                                 .requestMatchers("/.well-known/jwks.json").permitAll()
                                 .requestMatchers("/admin_only/**").hasAuthority("ADMIN")

@@ -1,6 +1,5 @@
 package com.dipanshushukla.realtimechatappauthservice.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -10,31 +9,32 @@ import org.springframework.stereotype.Service;
 import com.dipanshushukla.realtimechatappauthservice.dto.JwtResponseDTO;
 import com.dipanshushukla.realtimechatappauthservice.dto.UserDTO;
 import com.dipanshushukla.realtimechatappauthservice.dto.UserLoginCredentialsDTO;
+import com.dipanshushukla.realtimechatappauthservice.dto.UsernameExistsResponseDTO;
 import com.dipanshushukla.realtimechatappauthservice.entity.User;
 import com.dipanshushukla.realtimechatappauthservice.exception.UsernameAlreadyExistsException;
 import com.dipanshushukla.realtimechatappauthservice.repository.UserCredentialRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class AuthenticationService {
 
-    @Autowired
-    private UserCredentialRepository repository;
+    private final UserCredentialRepository repository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private JwtService jwtService;
+    private final JwtService jwtService;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private UserDetailsServiceImp userDetailsService;
+    private final UserDetailsServiceImp userDetailsService;
+
+    private final UsernameBloomFilterService bloomFilterService;
 
     public JwtResponseDTO register(UserDTO request) {
 
-        if (userExistsByUsername(request.getUsername()))
+        if (userExistsByUsername(request.getUsername()).isExists())
             throw new UsernameAlreadyExistsException(
                     "User already exists with username: " + request.getUsername());
 
@@ -42,6 +42,8 @@ public class AuthenticationService {
                 passwordEncoder.encode(request.getPassword()));
 
         user = repository.save(user);
+
+        bloomFilterService.add(user.getUsername());
 
         String accessToken = jwtService.generateAccessToken(user.getUserId(), user.getUsername());
         String refreshToken = jwtService.generateRefreshToken(user.getUserId(), user.getUsername());
@@ -83,7 +85,12 @@ public class AuthenticationService {
         return new JwtResponseDTO(newAccessToken, refreshToken);
     }
 
-    public boolean userExistsByUsername(String username) {
-        return repository.existsByUsername(username);
+    public UsernameExistsResponseDTO userExistsByUsername(String username) {
+        username = username.strip();
+        if (!bloomFilterService.exists(username)) {
+            return UsernameExistsResponseDTO.builder().exists(false).build();
+        }
+        return UsernameExistsResponseDTO.builder().exists(repository.existsByUsername(username)).build();
+
     }
 }

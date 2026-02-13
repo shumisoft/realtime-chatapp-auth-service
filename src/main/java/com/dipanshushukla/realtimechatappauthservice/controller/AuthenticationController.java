@@ -5,15 +5,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dipanshushukla.realtimechatappauthservice.dto.JwtResponseDTO;
 import com.dipanshushukla.realtimechatappauthservice.dto.UserDTO;
 import com.dipanshushukla.realtimechatappauthservice.dto.UserLoginCredentialsDTO;
+import com.dipanshushukla.realtimechatappauthservice.dto.UsernameExistsResponseDTO;
 import com.dipanshushukla.realtimechatappauthservice.service.AuthenticationService;
 import com.dipanshushukla.realtimechatappauthservice.service.JwtService;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -43,6 +46,12 @@ public class AuthenticationController {
     public ResponseEntity<Object> getJwks() {
         return ResponseEntity.ok(jwtService.getJwks());
 
+    }
+
+    @GetMapping("/exists")
+    public ResponseEntity<UsernameExistsResponseDTO> existByUsername(
+            @RequestParam @NotBlank(message = "Username must not be empty or null") String username) {
+        return ResponseEntity.ok(authService.userExistsByUsername(username));
     }
 
 }
