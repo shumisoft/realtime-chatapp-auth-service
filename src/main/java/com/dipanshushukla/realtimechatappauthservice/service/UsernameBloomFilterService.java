@@ -33,13 +33,23 @@ public class UsernameBloomFilterService {
         boolean isNew = usernameBloomFilter.tryInit(EXPECTED_INSERTIONS, FALSE_PROBABILITY);
 
         if (isNew) {
-            log.info("Bloom Filter created new.\nHydrating usernames from the DB.");
-            List<String> usernames = repository.findAllUsernames();
-            for (String username : usernames) {
-                add(username);
-            }
-            log.info("Hydration completed successfully!");
+            log.info("Bloom Filter created.");
+            hydrate();
         }
+    }
+
+    public void resetAndRehydrate() {
+        log.info("Resetting Bloom Filter: Deleting key and re-initializing.");
+        usernameBloomFilter.delete();
+        init();
+        log.info("Bloom Filter has been reset and re-hydrated.");
+    }
+
+    private void hydrate() {
+        log.info("Hydrating usernames from the DB.");
+        List<String> usernames = repository.findAllUsernames();
+        usernames.stream().forEach(this::add);
+        log.info("Hydration completed. Count: {}", usernames.size());
     }
 
     public boolean exists(String username) {

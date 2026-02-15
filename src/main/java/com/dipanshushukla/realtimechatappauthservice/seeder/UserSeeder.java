@@ -8,6 +8,7 @@ import com.dipanshushukla.realtimechatappauthservice.dto.UserDTO;
 import com.dipanshushukla.realtimechatappauthservice.model.Role;
 import com.dipanshushukla.realtimechatappauthservice.repository.UserCredentialRepository;
 import com.dipanshushukla.realtimechatappauthservice.service.AuthenticationService;
+import com.dipanshushukla.realtimechatappauthservice.service.UsernameBloomFilterService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ public class UserSeeder implements ApplicationRunner {
 
   private final UserCredentialRepository repository;
   private final AuthenticationService service;
+  private final UsernameBloomFilterService bloomFilterService;
 
   @Override
   public void run(ApplicationArguments args) throws Exception {
@@ -32,6 +34,8 @@ public class UserSeeder implements ApplicationRunner {
       return;
 
     }
+
+    bloomFilterService.resetAndRehydrate();
 
     for (int i = 1; i <= 10; i++) {
       UserDTO dto = UserDTO.builder()
